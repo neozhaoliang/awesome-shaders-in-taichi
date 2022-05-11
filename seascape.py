@@ -231,7 +231,7 @@ def step(t: float, mx: float, my: float):
 
 
 def main():
-    gui = ti.GUI('universe', res=(W, H))
+    gui = ti.GUI('Seascape', res=(W, H))
     t = 0.0
     while gui.running:
         mouse_x = mouse_y = 0.0
