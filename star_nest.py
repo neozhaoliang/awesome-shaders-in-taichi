@@ -26,7 +26,8 @@ saturation = 0.850
 @ti.kernel
 def step(t: float, mx: float, my: float):
     for i, j in img:
-        uv = vec2(i, j) / H - 0.5
+        uv = vec2(i, j) / vec2(W, H) - 0.5
+        uv.y *= H / W
         dir = vec3(uv * zoom, 1)
         time = t * speed + 0.25
 
