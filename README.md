@@ -1,5 +1,10 @@
-Awesome ShaderToy demos written in Taichi
+This repo is going to contain:
 
+1. awesome shadertoy demos exported to Taichi
+2. awesome physically based animations written in Taichi
+3. awesome Fragmentarium artworks exported to Taichi.
+
+Anyway, just awesome.
 
 |     |     |
 |:---:|:---:|
