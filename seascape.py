@@ -196,8 +196,8 @@ def heightMapTracing(ro, rd, time):
 
 @ti.func
 def getPixel(coord, time):
-    uv = 2 * coord / H - 1.0
-
+    uv = 2 * coord / vec2(W, H) - 1.0
+    uv.x *= W / H
     ang = vec3(sin(time * 3) * 0.1, sin(time) * 0.2 + 0.3, time)
     ro = vec3(0.0, 3.5, time * 5.0)
     rd = normalize(vec3(uv.xy, -2.0))
