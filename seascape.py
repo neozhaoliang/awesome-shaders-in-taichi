@@ -7,13 +7,13 @@ License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported Licen
 import taichi as ti
 from taichi.math import *
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.cpu)
 
 W, H = 800, 640
 img = ti.Vector.field(3, ti.f32, shape=(W, H))
 
 NUM_STEPS = 8
-EPSILON	= 1e-3
+EPSILON = 1e-3
 EPSILON_NRM = 0.1 / W
 AA = 1
 
@@ -231,7 +231,7 @@ def step(t: float, mx: float, my: float):
 
 
 def main():
-    gui = ti.GUI('Seascape', res=(W, H))
+    gui = ti.GUI('universe', res=(W, H))
     t = 0.0
     while gui.running:
         mouse_x = mouse_y = 0.0
