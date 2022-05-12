@@ -25,7 +25,7 @@ SEA_SPEED = 0.8
 SEA_FREQ = 0.16
 SEA_BASE = vec3(0.0, 0.09, 0.18)
 SEA_WATER_COLOR = vec3(0.8, 0.9, 0.6) * 0.6
-octave_m = mat2([[1.6, 1.2], [-1.2, 1.6]])
+octave_m = mat2([[1.6, -1.2], [1.2, 1.6]])
 
 
 @ti.func
@@ -35,8 +35,8 @@ def fromEuler(ang):
     a3 = vec2(sin(ang.z), cos(ang.z))
     return mat3([
         [
-            a1.y *a3.y + a1.x * a2.x * a3.x,
-            a1.y *a2.x * a3.x + a3.y * a1.x,
+            a1.y * a3.y + a1.x * a2.x * a3.x,
+            a1.y * a2.x * a3.x + a3.y * a1.x,
             -a2.y * a3.x
         ],
         [
