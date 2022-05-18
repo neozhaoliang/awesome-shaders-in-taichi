@@ -48,7 +48,7 @@ def step():
 
 def main():
     t0 = init()
-    gui = ti.GUI('Fractal Art', res=(W, H))
+    gui = ti.GUI('Fractal Stamens', res=(W, H))
     while gui.running:
         gui.get_event(ti.GUI.PRESS)
         if gui.is_pressed(ti.GUI.LMB):
