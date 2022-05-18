@@ -26,12 +26,10 @@ def hue(x):
 @ti.kernel
 def step():
     for i, j in img:
-        fragCoord = tm.vec2(i, j)
+        F = tm.vec3(i, j, 0)
         col = tm.vec3(0)
-        p = tm.vec3(0)
-        g = e = s = k = 0.
-        while k < 99.0:
-            p = g * tm.vec3((fragCoord - 0.5 * iResolution) / H, 1)
+        for k in range(1, 100):
+            p = F.z * tm.vec3((F.xy - 0.5 * iResolution) / H, 1)
             p.z -= 1.0
             p = tm.rotate3d(p, tm.normalize(tm.vec3(1, 3, 3)), iTime[None] * 0.2)
             s = 3.0
@@ -39,9 +37,8 @@ def step():
                 s *= (e := 1.0 / tm.min(tm.dot(p, p), 1))
                 p = abs(p) * e - 1.5
 
-            g += (e := tm.length(p.xy) / s)
-            k += 1.0
-            col += (tm.mix(tm.vec3(1), hue(g), 0.6) * 0.8 / k) * float(e < 0.001)
+            F.z += (e := tm.length(p.xy) / s)
+            col += (tm.mix(tm.vec3(1), hue(F.z), 0.6) * 0.8 / float(k)) * float(e < 0.001)
 
         img[i, j] = col
 
