@@ -1,3 +1,10 @@
+Run the scripts using the Taichi nightly version:
+
+```
+pip install -i https://pypi.taichi.graphics/simple/ taichi-nightly
+```
+
+
 This repo is going to contain:
 
 1. awesome shadertoy demos exported to Taichi
