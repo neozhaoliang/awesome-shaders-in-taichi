@@ -1,8 +1,10 @@
 # https://www.shadertoy.com/view/3l23Rh
+import time
 import taichi as ti
 import taichi.math as tm
 
 ti.init(arch=ti.gpu)
+
 
 W, H = 960, 640
 MAXITER = 130
@@ -25,6 +27,7 @@ def init():
     iMouse[None] = (0, 0)
     prm1[None] = 0
     bsMo[None] = (0, 0)
+    return time.perf_counter()
 
 
 @ti.func
@@ -148,7 +151,7 @@ def step():
 
 
 def main():
-    init()
+    t0 = init()
     gui = ti.GUI('Protean Clouds', res=(W, H))
     while gui.running:
         gui.get_event(ti.GUI.PRESS)
@@ -164,7 +167,7 @@ def main():
             gui.show('screenshot.png')
 
         step()
-        iTime[None] += 0.03
+        iTime[None] = time.perf_counter() - t0
         gui.set_image(img)
         gui.show()
 
