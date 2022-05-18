@@ -4,12 +4,17 @@ https://www.shadertoy.com/view/Ms2SD1
 "Seascape" by Alexander Alekseev aka TDM - 2014
 License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 """
+import time
 import taichi as ti
-from taichi.math import *
+import taichi.math as tm
 
-ti.init(arch=ti.cpu)
+ti.init(arch=ti.gpu)
 
 W, H = 800, 640
+iResolution = tm.vec2(W, H)
+iTime = ti.field(ti.f32, shape=())
+iMouse = ti.Vector.field(2, ti.f32, shape=())
+
 img = ti.Vector.field(3, ti.f32, shape=(W, H))
 
 NUM_STEPS = 8
@@ -23,17 +28,24 @@ SEA_HEIGHT = 0.6
 SEA_CHOPPY = 4.0
 SEA_SPEED = 0.8
 SEA_FREQ = 0.16
-SEA_BASE = vec3(0.0, 0.09, 0.18)
-SEA_WATER_COLOR = vec3(0.8, 0.9, 0.6) * 0.6
-octave_m = mat2([[1.6, -1.2], [1.2, 1.6]])
+SEA_BASE = tm.vec3(0.0, 0.09, 0.18)
+SEA_WATER_COLOR = tm.vec3(0.8, 0.9, 0.6) * 0.6
+octave_m = tm.mat2([[1.6, -1.2], [1.2, 1.6]])
+
+
+
+def init():
+    iTime[None] = 0.0
+    iMouse[None] = (0, 0)
+    return time.perf_counter()
 
 
 @ti.func
 def fromEuler(ang):
-    a1 = vec2(sin(ang.x), cos(ang.x))
-    a2 = vec2(sin(ang.y), cos(ang.y))
-    a3 = vec2(sin(ang.z), cos(ang.z))
-    return mat3([
+    a1 = tm.vec2(tm.sin(ang.x), tm.cos(ang.x))
+    a2 = tm.vec2(tm.sin(ang.y), tm.cos(ang.y))
+    a3 = tm.vec2(tm.sin(ang.z), tm.cos(ang.z))
+    return tm.mat3([
         [
             a1.y * a3.y + a1.x * a2.x * a3.x,
             a1.y * a2.x * a3.x + a3.y * a1.x,
@@ -52,37 +64,37 @@ def fromEuler(ang):
 
 @ti.func
 def hash21(p):
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123)
+    return tm.fract(tm.sin(tm.dot(p, tm.vec2(127.1, 311.7))) * 43758.5453123)
 
 
 @ti.func
 def noise(p):
-    ip = floor(p)
-    fp = fract(p)
+    ip = tm.floor(p)
+    fp = tm.fract(p)
     u = fp * fp * (3.0 - 2.0 * fp)
-    a = hash21(ip + vec2(0, 0))
-    b = hash21(ip + vec2(1, 0))
-    c = hash21(ip + vec2(0, 1))
-    d = hash21(ip + vec2(1, 1))
-    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y) * 2 - 1
+    a = hash21(ip + tm.vec2(0, 0))
+    b = hash21(ip + tm.vec2(1, 0))
+    c = hash21(ip + tm.vec2(0, 1))
+    d = hash21(ip + tm.vec2(1, 1))
+    return tm.mix(tm.mix(a, b, u.x), tm.mix(c, d, u.x), u.y) * 2 - 1
 
 
 @ti.func
 def diffuse(nor, lig, exponent):
-    return pow(dot(nor, lig) * 0.4 + 0.6, exponent)
+    return tm.pow(tm.dot(nor, lig) * 0.4 + 0.6, exponent)
 
 
 @ti.func
 def specular(nor, lig, e, s):
-    nrm = (s + 8.0) / (pi * 8.0)
-    return pow(max(dot(reflect(e, nor), lig), 0), s) * nrm
+    nrm = (s + 8.0) / (tm.pi * 8.0)
+    return tm.pow(tm.max(tm.dot(tm.reflect(e, nor), lig), 0), s) * nrm
 
 
 @ti.func
 def getSkyColor(e):
-    e.y = (max(e.y, 0.0) * 0.8 + 0.2) * 0.8
-    return vec3(
-        pow(1.0 - e.y, 2.0),
+    e.y = (tm.max(e.y, 0.0) * 0.8 + 0.2) * 0.8
+    return tm.vec3(
+        tm.pow(1.0 - e.y, 2.0),
         1.0 - e.y,
         0.6 + (1.0 - e.y) * 0.4
     ) * 1.1
@@ -91,20 +103,20 @@ def getSkyColor(e):
 @ti.func
 def sea_octave(uv, choppy):
     uv += noise(uv)
-    wv = 1.0 - abs(sin(uv))
-    swv = abs(cos(uv))
-    wv = mix(wv, swv, wv)
-    return pow(1 - pow(wv.x * wv.y, 0.65), choppy)
+    wv = 1.0 - abs(tm.sin(uv))
+    swv = abs(tm.cos(uv))
+    wv = tm.mix(wv, swv, wv)
+    return tm.pow(1 - tm.pow(wv.x * wv.y, 0.65), choppy)
 
 
 @ti.func
-def seatime(time):
-    return 1.0 + time * SEA_SPEED
+def seatime():
+    return 1.0 + iTime[None] * SEA_SPEED
 
 
 @ti.func
-def map(p, time):
-    time = seatime(time)
+def map(p):
+    time = seatime()
     freq = SEA_FREQ
     amp = SEA_HEIGHT
     choppy = SEA_CHOPPY
@@ -119,14 +131,14 @@ def map(p, time):
         uv = octave_m @ uv
         freq *= 1.9
         amp *= 0.22
-        choppy = mix(choppy, 1.0, 0.2)
+        choppy = tm.mix(choppy, 1.0, 0.2)
 
     return p.y - h
 
 
 @ti.func
-def map_detailed(p, time):
-    time = seatime(time)
+def map_detailed(p):
+    time = seatime()
     freq = SEA_FREQ
     amp = SEA_HEIGHT
     choppy = SEA_CHOPPY
@@ -141,103 +153,103 @@ def map_detailed(p, time):
         uv = octave_m @ uv
         freq *= 1.9
         amp *= 0.22
-        choppy = mix(choppy, 1.0, 0.2)
+        choppy = tm.mix(choppy, 1.0, 0.2)
 
     return p.y - h
 
 
 @ti.func
 def getSeaColor(p, n, l, eye, dist):
-    fresnel = clamp(1.0 - dot(n, -eye), 0.0, 1.0)
-    fresnel = pow(fresnel, 3.0) * 0.5
-    reflected = getSkyColor(reflect(eye, n))
+    fresnel = tm.clamp(1.0 - tm.dot(n, -eye), 0.0, 1.0)
+    fresnel = tm.pow(fresnel, 3.0) * 0.5
+    reflected = getSkyColor(tm.reflect(eye, n))
     refracted = SEA_BASE + diffuse(n, l, 80.0) * SEA_WATER_COLOR * 0.12
-    color = mix(refracted, reflected, fresnel)
-    atten = max(1.0 - dot(dist, dist) * 0.001, 0.0)
+    color = tm.mix(refracted, reflected, fresnel)
+    atten = tm.max(1.0 - tm.dot(dist, dist) * 0.001, 0.0)
     color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten
-    color += vec3(specular(n, l, eye, 60.0))
+    color += tm.vec3(specular(n, l, eye, 60.0))
     return color
 
 
 @ti.func
-def getNormal(p, eps, time):
-    n = vec3(0)
-    n.y = map_detailed(p, time)
-    n.x = map_detailed(vec3(p.x + eps, p.y, p.z), time) - n.y
-    n.z = map_detailed(vec3(p.x, p.y, p.z + eps), time) - n.y
+def getNormal(p, eps):
+    n = tm.vec3(0)
+    n.y = map_detailed(p)
+    n.x = map_detailed(tm.vec3(p.x + eps, p.y, p.z)) - n.y
+    n.z = map_detailed(tm.vec3(p.x, p.y, p.z + eps)) - n.y
     n.y = eps
-    return normalize(n)
+    return tm.normalize(n)
 
 
 @ti.func
-def heightMapTracing(ro, rd, time):
-    p = vec3(0)
-    tm = 0.0
-    tx = 1000.0
-    hx = map(ro + rd * tx, time)
-    if hx > 0.0:
-        p = ro + rd * tx
+def heightMapTracing(ro, rd):
+    p = tm.vec3(0)
+    tmin = 0.0
+    tmax = 1000.0
+    hmax = map(ro + rd * tmax)
+    if hmax > 0.0:
+        p = ro + rd * tmax
 
     else:
-        hm = map(ro + rd * tm, time)
+        hmin = map(ro + rd * tmin)
         tmid = 0.0
         for i in range(NUM_STEPS):
-            tmid = mix(tm, tx, hm / (hm - hx))
+            tmid = tm.mix(tmin, tmax, hmin / (hmin - hmax))
             p = ro + rd * tmid
-            hmid = map(p, time)
+            hmid = map(p)
             if hmid < 0.0:
-                tx = tmid
-                hx = hmid
+                tmax = tmid
+                hmax = hmid
             else:
-                tm = tmid
-                hm = hmid
+                tmin = tmid
+                hmin = hmid
     return p
 
 
 @ti.func
 def getPixel(coord, time):
-    uv = 2 * coord / vec2(W, H) - 1.0
+    uv = 2 * coord / iResolution - 1.0
     uv.x *= W / H
-    ang = vec3(sin(time * 3) * 0.1, sin(time) * 0.2 + 0.3, time)
-    ro = vec3(0.0, 3.5, time * 5.0)
-    rd = normalize(vec3(uv.xy, -2.0))
-    rd.z += length(uv) * 0.14
-    rd = fromEuler(ang) @ normalize(rd)
+    ang = tm.vec3(tm.sin(time * 3) * 0.1, tm.sin(time) * 0.2 + 0.3, time)
+    ro = tm.vec3(0.0, 3.5, time * 5.0)
+    rd = tm.normalize(tm.vec3(uv.xy, -2.0))
+    rd.z += tm.length(uv) * 0.14
+    rd = fromEuler(ang) @ tm.normalize(rd)
 
-    p = heightMapTracing(ro, rd, time)
+    p = heightMapTracing(ro, rd)
     dist = p - ro
-    n = getNormal(p, dot(dist, dist) * EPSILON_NRM, time)
-    light = normalize(vec3(0.0, 1.0, 0.8))
+    n = getNormal(p, tm.dot(dist, dist) * EPSILON_NRM)
+    light = tm.normalize(tm.vec3(0.0, 1.0, 0.8))
 
-    return mix(
+    return tm.mix(
         getSkyColor(rd),
         getSeaColor(p, n, light, rd, dist),
-        pow(smoothstep(0, -0.02, rd.y), 0.2)
+        tm.pow(tm.smoothstep(0, -0.02, rd.y), 0.2)
     )
 
 
 @ti.kernel
-def step(t: float, mx: float, my: float):
-    time = t * 0.3 + mx * 0.01
+def step():
+    time = iTime[None] * 0.3 + iMouse[None].x * 0.01
     for i, j in img:
-        color = vec3(0)
+        color = tm.vec3(0)
         for dx, dy in ti.ndrange((-1, 2), (-1, 2)):
-            uv = vec2(i, j) + vec2(dx, dy) / 3
+            uv = tm.vec2(i, j) + tm.vec2(dx, dy) / 3
             color += getPixel(uv, time)
 
         color /= 9.0
-        color = pow(color, 0.65)
+        color = tm.pow(color, 0.65)
         img[i, j] = color
 
 
 def main():
+    t0 = init()
     gui = ti.GUI('universe', res=(W, H))
-    t = 0.0
     while gui.running:
-        mouse_x = mouse_y = 0.0
         gui.get_event(ti.GUI.PRESS)
         if gui.is_pressed(ti.GUI.LMB):
             mouse_x, mouse_y = gui.get_cursor_pos()
+            iMouse[None] = tm.vec2(mouse_x, mouse_y) * iResolution
 
         if gui.is_pressed(ti.GUI.ESCAPE):
             gui.running = False
@@ -246,8 +258,8 @@ def main():
             gui.set_image(img)
             gui.show('screenshot.png')
 
-        step(t, mouse_x, mouse_y)
-        t += 0.03
+        step()
+        iTime[None] = time.perf_counter() - t0
         gui.set_image(img)
         gui.show()
 
