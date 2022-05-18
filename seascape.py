@@ -244,7 +244,7 @@ def step():
 
 def main():
     t0 = init()
-    gui = ti.GUI('universe', res=(W, H))
+    gui = ti.GUI('Seascape', res=(W, H))
     while gui.running:
         gui.get_event(ti.GUI.PRESS)
         if gui.is_pressed(ti.GUI.LMB):
