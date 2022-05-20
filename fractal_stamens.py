@@ -23,7 +23,7 @@ def step(t: ti.f32):
             img[i, j] += (tm.cos(FC.z * 6.3 + tm.vec3(0, 23, 21)) * 0.24 + 0.56) * float(e < 0.001) / k
 
 t0 = perf_counter()
-gui = ti.GUI('Fractal Stamens', res=res)
+gui = ti.GUI('Fractal Stamens', res=res,, fast_gui=True)
 while gui.running:
     step(perf_counter() - t0)
     gui.set_image(img)
