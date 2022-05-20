@@ -152,7 +152,7 @@ def step():
 
 def main():
     t0 = init()
-    gui = ti.GUI('Protean Clouds', res=(W, H))
+    gui = ti.GUI('Protean Clouds', res=(W, H), fast_gui=True)
     while gui.running:
         gui.get_event(ti.GUI.PRESS)
         if gui.is_pressed(ti.GUI.LMB):
