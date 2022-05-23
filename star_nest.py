@@ -61,8 +61,8 @@ def step():
             pa = a = 0.0
             for _ in range(iterations):
                 p = abs(p) / tm.dot(p, p) - formuparam
-                a += abs(tm.length(p) - pa)
-                pa = tm.length(p)
+                a += abs(p.norm() - pa)
+                pa = p.norm()
 
             dm = max(0, darkmatter - a * a * 0.001)
             a *= a*a
@@ -74,7 +74,7 @@ def step():
             fade *= distfading
             s += stepsize
 
-        color = tm.mix(tm.vec3(tm.length(v)), v, saturation)
+        color = tm.mix(tm.vec3(v.norm()), v, saturation)
         img[i, j] = color * 0.01
 
 
