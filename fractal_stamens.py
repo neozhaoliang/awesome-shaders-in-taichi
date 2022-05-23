@@ -4,7 +4,7 @@ import taichi.math as tm
 
 ti.init(arch=ti.gpu)
 res = (800, 640)
-img = ti.Vector.field(3, ti.f32, shape=res)
+img = ti.Vector.field(3, float, shape=res)
 
 @ti.kernel
 def step(t: ti.f32):
