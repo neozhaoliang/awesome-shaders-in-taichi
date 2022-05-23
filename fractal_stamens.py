@@ -17,13 +17,13 @@ def step(t: ti.f32):
             p = tm.rotate3d(p, tm.normalize(tm.vec3(1, 3, 3)), t * 0.2)
             s = 3.0
             for _ in range(5):
-                s *= (e := 1.0 / tm.min(tm.dot(p, p), 1))
+                s *= (e := 1.0 / ti.min(tm.dot(p, p), 1))
                 p = abs(p) * e - 1.5
-            FC.z += (e := tm.length(p.xy) / s)
-            img[i, j] += (tm.cos(FC.z * 6.3 + tm.vec3(0, 23, 21)) * 0.24 + 0.56) * float(e < 0.001) / k
+            FC.z += (e := p.xy.norm() / s)
+            img[i, j] += (ti.cos(FC.z * 6.3 + tm.vec3(0, 23, 21)) * 0.24 + 0.56) * float(e < 0.001) / k
 
 t0 = perf_counter()
-gui = ti.GUI('Fractal Stamens', res=res,, fast_gui=True)
+gui = ti.GUI('Fractal Stamens', res=res, fast_gui=True)
 while gui.running:
     step(perf_counter() - t0)
     gui.set_image(img)
