@@ -7,7 +7,7 @@ ti.init(arch=ti.gpu)
 
 W, H = 800, 640
 iResolution = tm.vec2(W, H)
-iTime = ti.field(ti.f32, shape=())
+iTime = ti.field(float, shape=())
 iMouse = ti.Vector.field(2, float, shape=())
 
 img = ti.Vector.field(4, float, shape=(W, H))
