@@ -7,7 +7,7 @@ res = (800, 640)
 img = ti.Vector.field(3, float, shape=res)
 
 @ti.kernel
-def step(t: ti.f32):
+def step(t: float):
     for i, j in img:
         FC = tm.vec3(i, j, 0)
         img[i, j] = tm.vec3(0)
