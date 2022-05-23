@@ -37,14 +37,14 @@ def linstep(mn, mx, x):
 
 @ti.func
 def disp(t):
-    return tm.vec2(tm.sin(t * 0.22), tm.cos(t * 0.175)) * 2
+    return tm.vec2(ti.sin(t * 0.22), ti.cos(t * 0.175)) * 2
 
 
 @ti.func
 def map(p):
     p2 = p
     p2.xy -= disp(p.z).xy
-    m = tm.rot2(-tm.sin(p.z + iTime[None]) * (0.1 + prm1[None] * 0.05) - iTime[None] * 0.09)
+    m = tm.rot2(-ti.sin(p.z + iTime[None]) * (0.1 + prm1[None] * 0.05) - iTime[None] * 0.09)
     p.xy = m @ p.xy
     cl = tm.dot(p2.xy, p2.xy)
     d = 0.
@@ -53,8 +53,8 @@ def map(p):
     trk = 1.
     dspAmp = 0.1 + prm1[None] * 0.2
     for _ in range(5):
-        p += tm.sin(p.zxy * 0.75 * trk + iTime[None] * trk * 0.8) * dspAmp
-        d -= abs(tm.dot(tm.cos(p), tm.sin(p.yzx))*z)
+        p += ti.sin(p.zxy * 0.75 * trk + iTime[None] * trk * 0.8) * dspAmp
+        d -= abs(tm.dot(ti.cos(p), ti.sin(p.yzx))*z)
         z *= 0.57
         trk *= 1.4
         p = m3.transpose() @ p
@@ -81,7 +81,7 @@ def render(ro, rd, time):
         col = tm.vec4(0)
         if mpv.x > 0.6:
             col = tm.vec4(
-                tm.sin(tm.vec3(5, 0.4, 0.2) + mpv.y * 0.1 + tm.sin(pos.z * 0.4) * 0.5 + 1.8) * 0.5 + 0.5, 0.08
+                ti.sin(tm.vec3(5, 0.4, 0.2) + mpv.y * 0.1 + ti.sin(pos.z * 0.4) * 0.5 + 1.8) * 0.5 + 0.5, 0.08
             )
             col *= den * den * den
             col.rgb *= linstep(4, -2.5, mpv.x) * 2.3
@@ -89,7 +89,7 @@ def render(ro, rd, time):
             dif += tm.clamp((den - map(pos + 0.35).x) / 2.5, 0.001, 1)
             col.xyz *= den * (tm.vec3(0.005, 0.045, 0.075) + 1.5 * tm.vec3(0.033, 0.07, 0.03) * dif)
 
-        fogC = tm.exp(t*0.2 - 2.2)
+        fogC = ti.exp(t*0.2 - 2.2)
         col += tm.vec4(0.06, 0.11, 0.11, 0.1) * tm.clamp(fogC - fogT, 0, 1)
         fogT = fogC
         rez = rez + col * (1 - rez.a)
@@ -99,8 +99,8 @@ def render(ro, rd, time):
 
 @ti.func
 def getsat(c):
-    mi = tm.min(tm.min(c.x, c.y), c.z)
-    ma = tm.max(tm.max(c.x, c.y), c.z)
+    mi = ti.min(ti.min(c.x, c.y), c.z)
+    ma = ti.max(ti.max(c.x, c.y), c.z)
     return (ma - mi) / (ma + 1e-7)
 
 
@@ -127,7 +127,7 @@ def step():
 
         time = iTime[None] * 3
         ro = tm.vec3(0, 0, time)
-        ro += tm.vec3(tm.sin(time) * 0.5, 0, 0)
+        ro += tm.vec3(ti.sin(time) * 0.5, 0, 0)
 
         dspAmp = .85
         ro.xy += disp(ro.z) * dspAmp
@@ -140,13 +140,13 @@ def step():
         rightdir = tm.normalize(tm.cross(updir, target))
         rd = tm.normalize((p.x * rightdir + p.y * updir) - target)
         rd.xy = tm.rot2(disp(time + 3.5).x*0.2 - bsMo[None].x) @ rd.xy
-        prm1[None] = tm.smoothstep(-0.4, 0.4, tm.sin(iTime[None]*0.3))
+        prm1[None] = tm.smoothstep(-0.4, 0.4, ti.sin(iTime[None]*0.3))
         scn = render(ro, rd, time)
 
         col = scn.rgb
         col = iLerp(col.bgr, col.rgb, tm.clamp(1 - prm1[None], 0.05, 1))
-        col = tm.pow(col, tm.vec3(.55, 0.65, 0.6)) * tm.vec3(1, 0.97, 0.9)
-        col *= tm.pow(16.0 * q.x * q.y * (1 - q.x) * (1 - q.y), 0.12) * 0.7 + 0.3
+        col = ti.pow(col, tm.vec3(.55, 0.65, 0.6)) * tm.vec3(1, 0.97, 0.9)
+        col *= ti.pow(16.0 * q.x * q.y * (1 - q.x) * (1 - q.y), 0.12) * 0.7 + 0.3
         img[i, j] = col
 
 
