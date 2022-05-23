@@ -9,13 +9,13 @@ ti.init(arch=ti.gpu)
 W, H = 960, 640
 MAXITER = 130
 iResolution = tm.vec2(W, H)
-iTime = ti.field(ti.f32, shape=())
-iMouse = ti.Vector.field(2, ti.f32, shape=())
+iTime = ti.field(float, shape=())
+iMouse = ti.Vector.field(2, float, shape=())
 
-img = ti.Vector.field(3, ti.f32, shape=(W, H))
+img = ti.Vector.field(3, float, shape=(W, H))
 
-prm1 = ti.field(ti.f32, shape=())
-bsMo = ti.Vector.field(2, ti.f32, shape=())
+prm1 = ti.field(float, shape=())
+bsMo = ti.Vector.field(2, float, shape=())
 
 m3 = tm.mat3([[0.33338, 0.56034, -0.71817],
               [-0.87887, 0.32651, -0.15323],
