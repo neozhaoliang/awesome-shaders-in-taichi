@@ -42,9 +42,9 @@ def init():
 
 @ti.func
 def fromEuler(ang):
-    a1 = tm.vec2(tm.sin(ang.x), tm.cos(ang.x))
-    a2 = tm.vec2(tm.sin(ang.y), tm.cos(ang.y))
-    a3 = tm.vec2(tm.sin(ang.z), tm.cos(ang.z))
+    a1 = tm.vec2(ti.sin(ang.x), ti.cos(ang.x))
+    a2 = tm.vec2(ti.sin(ang.y), ti.cos(ang.y))
+    a3 = tm.vec2(ti.sin(ang.z), ti.cos(ang.z))
     return tm.mat3([
         [
             a1.y * a3.y + a1.x * a2.x * a3.x,
@@ -64,12 +64,12 @@ def fromEuler(ang):
 
 @ti.func
 def hash21(p):
-    return tm.fract(tm.sin(tm.dot(p, tm.vec2(127.1, 311.7))) * 43758.5453123)
+    return tm.fract(ti.sin(tm.dot(p, tm.vec2(127.1, 311.7))) * 43758.5453123)
 
 
 @ti.func
 def noise(p):
-    ip = tm.floor(p)
+    ip = ti.floor(p)
     fp = tm.fract(p)
     u = fp * fp * (3.0 - 2.0 * fp)
     a = hash21(ip + tm.vec2(0, 0))
@@ -81,20 +81,20 @@ def noise(p):
 
 @ti.func
 def diffuse(nor, lig, exponent):
-    return tm.pow(tm.dot(nor, lig) * 0.4 + 0.6, exponent)
+    return ti.pow(tm.dot(nor, lig) * 0.4 + 0.6, exponent)
 
 
 @ti.func
 def specular(nor, lig, e, s):
     nrm = (s + 8.0) / (tm.pi * 8.0)
-    return tm.pow(tm.max(tm.dot(tm.reflect(e, nor), lig), 0), s) * nrm
+    return ti.pow(ti.max(tm.dot(tm.reflect(e, nor), lig), 0), s) * nrm
 
 
 @ti.func
 def getSkyColor(e):
-    e.y = (tm.max(e.y, 0.0) * 0.8 + 0.2) * 0.8
+    e.y = (ti.max(e.y, 0.0) * 0.8 + 0.2) * 0.8
     return tm.vec3(
-        tm.pow(1.0 - e.y, 2.0),
+        ti.pow(1.0 - e.y, 2.0),
         1.0 - e.y,
         0.6 + (1.0 - e.y) * 0.4
     ) * 1.1
@@ -103,10 +103,10 @@ def getSkyColor(e):
 @ti.func
 def sea_octave(uv, choppy):
     uv += noise(uv)
-    wv = 1.0 - abs(tm.sin(uv))
-    swv = abs(tm.cos(uv))
+    wv = 1.0 - abs(ti.sin(uv))
+    swv = abs(ti.cos(uv))
     wv = tm.mix(wv, swv, wv)
-    return tm.pow(1 - tm.pow(wv.x * wv.y, 0.65), choppy)
+    return ti.pow(1 - ti.pow(wv.x * wv.y, 0.65), choppy)
 
 
 @ti.func
@@ -161,11 +161,11 @@ def map_detailed(p):
 @ti.func
 def getSeaColor(p, n, l, eye, dist):
     fresnel = tm.clamp(1.0 - tm.dot(n, -eye), 0.0, 1.0)
-    fresnel = tm.pow(fresnel, 3.0) * 0.5
+    fresnel = ti.pow(fresnel, 3.0) * 0.5
     reflected = getSkyColor(tm.reflect(eye, n))
     refracted = SEA_BASE + diffuse(n, l, 80.0) * SEA_WATER_COLOR * 0.12
     color = tm.mix(refracted, reflected, fresnel)
-    atten = tm.max(1.0 - tm.dot(dist, dist) * 0.001, 0.0)
+    atten = ti.max(1.0 - tm.dot(dist, dist) * 0.001, 0.0)
     color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten
     color += tm.vec3(specular(n, l, eye, 60.0))
     return color
@@ -210,10 +210,10 @@ def heightMapTracing(ro, rd):
 def getPixel(coord, time):
     uv = 2 * coord / iResolution - 1.0
     uv.x *= W / H
-    ang = tm.vec3(tm.sin(time * 3) * 0.1, tm.sin(time) * 0.2 + 0.3, time)
+    ang = tm.vec3(ti.sin(time * 3) * 0.1, ti.sin(time) * 0.2 + 0.3, time)
     ro = tm.vec3(0.0, 3.5, time * 5.0)
     rd = tm.normalize(tm.vec3(uv.xy, -2.0))
-    rd.z += tm.length(uv) * 0.14
+    rd.z += uv.norm() * 0.14
     rd = fromEuler(ang) @ tm.normalize(rd)
 
     p = heightMapTracing(ro, rd)
@@ -224,7 +224,7 @@ def getPixel(coord, time):
     return tm.mix(
         getSkyColor(rd),
         getSeaColor(p, n, light, rd, dist),
-        tm.pow(tm.smoothstep(0, -0.02, rd.y), 0.2)
+        ti.pow(tm.smoothstep(0, -0.02, rd.y), 0.2)
     )
 
 
@@ -238,7 +238,7 @@ def step():
             color += getPixel(uv, time)
 
         color /= 9.0
-        color = tm.pow(color, 0.65)
+        color = ti.pow(color, 0.65)
         img[i, j] = color
 
 
