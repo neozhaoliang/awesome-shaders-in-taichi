@@ -81,7 +81,7 @@ def step():
 
 def main():
     t0 = init()
-    gui = ti.GUI('Star Nest', res=(W, H), fast_gui=True)
+    gui = ti.GUI('Flame', res=(W, H), fast_gui=True)
     while gui.running:
         gui.get_event(ti.GUI.PRESS)
         if gui.is_pressed(ti.GUI.LMB):
