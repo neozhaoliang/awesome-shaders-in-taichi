@@ -21,17 +21,17 @@ def init():
 
 @ti.func
 def noise(p):
-    i = tm.floor(p)
+    i = ti.floor(p)
     a = tm.dot(i, tm.vec3(1., 57., 21.)) + tm.vec4(0., 57., 21., 78.)
-    f = tm.cos((p - i) * tm.acos(-1)) * (-0.5) + 0.5
-    a = tm.mix(tm.sin(tm.cos(a) * a), tm.sin(tm.cos(1 + a) * (1 + a)), f.x)
+    f = ti.cos((p - i) * ti.acos(-1)) * (-0.5) + 0.5
+    a = tm.mix(ti.sin(ti.cos(a) * a), ti.sin(ti.cos(1 + a) * (1 + a)), f.x)
     a.xy = tm.mix(a.xz, a.yw, f.y)
     return tm.mix(a.x, a.y, f.z)
 
 
 @ti.func
 def sphere(p, spr):
-    return tm.length(spr.xyz - p) - spr.w
+    return (spr.xyz - p).norm() - spr.w
 
 
 @ti.func
@@ -42,7 +42,7 @@ def flame(p):
 
 @ti.func
 def scene(p):
-    return tm.min(100 - tm.length(p), abs(flame(p)))
+    return ti.min(100 - p.norm(), abs(flame(p)))
 
 
 @ti.func
@@ -75,7 +75,7 @@ def step():
         col = tm.mix(tm.vec4(1, 0.5, 0.1, 1),
                      tm.vec4(0.1, 0.5, 1, 1),
                      p.y * 0.02 + 0.4)
-        col = tm.mix(tm.vec4(0), col, tm.pow(glow * 2, 4))
+        col = tm.mix(tm.vec4(0), col, ti.pow(glow * 2, 4))
         img[i, j] = col
 
 
