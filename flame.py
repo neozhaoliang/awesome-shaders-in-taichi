@@ -47,7 +47,6 @@ def scene(p):
 
 @ti.func
 def raymarch(org, dir):
-    d = 0.0
     glow = 0.0
     eps = 0.02
     p = org
