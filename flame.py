@@ -3,7 +3,7 @@ import time
 import taichi as ti
 import taichi.math as tm
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.vulkan)
 
 W, H = 800, 640
 iResolution = tm.vec2(W, H)
@@ -80,23 +80,24 @@ def step():
 
 def main():
     t0 = init()
-    gui = ti.GUI('Flame', res=(W, H), fast_gui=True)
+    gui = ti.ui.Window('Flame', res=(W, H))
+    canvas = gui.get_canvas()
     while gui.running:
-        gui.get_event(ti.GUI.PRESS)
-        if gui.is_pressed(ti.GUI.LMB):
+        gui.get_event(ti.ui.PRESS)
+        if gui.is_pressed(ti.ui.LMB):
             mouse_x, mouse_y = gui.get_cursor_pos()
             iMouse[None] = tm.vec2(mouse_x, mouse_y) * iResolution
 
-        if gui.is_pressed(ti.GUI.ESCAPE):
+        if gui.is_pressed(ti.ui.ESCAPE):
             gui.running = False
 
         if gui.is_pressed('p'):
-            gui.set_image(img)
+            canvas.set_image(img)
             gui.show('screenshot.png')
 
         step()
         iTime[None] = time.perf_counter() - t0
-        gui.set_image(img)
+        canvas.set_image(img)
         gui.show()
 
 
