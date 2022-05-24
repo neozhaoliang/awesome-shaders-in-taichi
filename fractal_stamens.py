@@ -2,7 +2,7 @@ from time import perf_counter
 import taichi as ti
 import taichi.math as tm
 
-ti.init(arch=ti.gpu)
+ti.init(arch=ti.vulkan)
 res = (800, 640)
 img = ti.Vector.field(3, float, shape=res)
 
@@ -23,8 +23,9 @@ def step(t: float):
             img[i, j] += (tm.cos(FC.z * 6.3 + tm.vec3(0, 23, 21)) * 0.24 + 0.56) * float(e < 0.001) / k
 
 t0 = perf_counter()
-gui = ti.GUI('Fractal Stamens', res=res,, fast_gui=True)
+gui = ti.ui.Window('Fractal Stamens', res=res)
+canvas = gui.get_canvas()
 while gui.running:
     step(perf_counter() - t0)
-    gui.set_image(img)
+    canvas.set_image(img)
     gui.show()
