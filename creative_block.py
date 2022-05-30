@@ -146,7 +146,7 @@ def getSampleBiased(dir, power):
     o2 = tm.normalize(tm.cross(dir, o1))
     r = hash2()
     r.x *= 2 * tm.pi
-    r.y = pow(r.y, 1 / (power + 1.0))
+    r.y = tm.pow(r.y, 1 / (power + 1.0))
     oneminus = tm.sqrt(1 - r.y * r.y)
     return tm.cos(r.x) * oneminus * o1 + tm.sin(r.x) * oneminus * o2 + r.y * dir
 
@@ -166,7 +166,7 @@ def getConeSample(dir, extent):
 @ti.func
 def sky(sunDir, viewDir):
     softlight = max(0, tm.dot(tm.normalize(sunDir * tm.vec3(-1, 1, -1)), viewDir) + 0.2)
-    keylight = pow(max(0, tm.dot(sunDir, viewDir) - 0.5), 3)
+    keylight = tm.pow(max(0, tm.dot(sunDir, viewDir) - 0.5), 3)
     return tm.vec3(softlight * 0.015 + keylight * 10) * 1.5
 
 
@@ -235,7 +235,7 @@ def trace2(cam, dir, nearClip, fragCoord):
                 accum *= col * col *col
 
             elif material[fragCoord][0] == kMatPlasticRed:
-                fresnel = pow(1 - min(.99, tm.dot(-dir, n)), 5)
+                fresnel = tm.pow(1 - min(.99, tm.dot(-dir, n)), 5)
                 fresnel = tm.mix(.04, 1., fresnel)
                 if ti.random() < fresnel:
                     dir = tm.reflect(dir, n)
@@ -244,7 +244,7 @@ def trace2(cam, dir, nearClip, fragCoord):
                     accum *= tm.vec3(180, 2, 1) / 255.
 
             elif material[fragCoord][0] == kMatLead:
-                fresnel = pow(1 - min(.99, tm.dot(-dir, n)), 5)
+                fresnel = tm.pow(1 - min(.99, tm.dot(-dir, n)), 5)
                 fresnel = tm.mix(.04, 1., fresnel)
                 dir = getConeSample(tm.reflect(dir, n), 0.3)
                 accum *= .05
@@ -318,8 +318,8 @@ def renderImage():
 
         color *= 3.5
         color = tm.mix(color, 1 - tm.exp(color * -2), 0.5)
-        color = pow(color, tm.vec3(1, 1.02, 1.05))
-        color = pow(color, tm.vec3(.45))
+        color = tm.pow(color, tm.vec3(1, 1.02, 1.05))
+        color = tm.pow(color, tm.vec3(.45))
         color += (tm.vec3(ti.random(), ti.random(), ti.random()) - 0.5) * 0.01
 
         uv *= iResolution.xy / iResolution.yx
