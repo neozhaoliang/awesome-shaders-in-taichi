@@ -40,6 +40,9 @@ def init():
     for i, j in iChannel0:
         iChannel0[i, j] = 0, 0, 0, 0
 
+    for i, j in iChannel1:
+        iChannel1[i, j] = tm.vec4(ti.random())
+
 
 @ti.func
 def texture(tex, uv):
@@ -333,7 +336,7 @@ def main():
     gui = ti.ui.Window('Creative Block', res=(W, H))
     canvas = gui.get_canvas()
     init()
-    load_texture(iChannel1, "./noise_gray_64x64.png")
+    #load_texture(iChannel1, "./noise_gray_64x64.png")
     while gui.running:
         gui.get_event(ti.ui.PRESS)
         if gui.is_pressed(ti.ui.ESCAPE):
