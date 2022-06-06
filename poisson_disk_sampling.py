@@ -1,6 +1,6 @@
 """
 Poisson disk sampling in Taichi.
-Based on code by YuanMing-Hu: https://github.com/taichi-dev/poisson_disk_sampling
+Based on code by Yuanming Hu: https://github.com/taichi-dev/poisson_disk_sampling
 """
 import taichi as ti
 import taichi.math as tm
@@ -65,7 +65,7 @@ def find_nearest_point(p):
 
 @ti.kernel
 def poisson_disk_sample(num_samples: int) -> int:
-    while head[None] < tail[None] and head[None] < num_samples:
+    while head[None] < tail[None] and head[None] < min(num_samples, desired_samples):
         source_x = samples[head[None]]
         head[None] += 1
 
@@ -134,7 +134,7 @@ def render():
 refresh_scene()
 gui = ti.GUI("Poisson Disk Sampling", res=(window_size, window_size))
 gui.fps_limit = 10
-while gui.running and sample_count[None] < desired_samples:
+while gui.running:
     gui.get_event(ti.GUI.PRESS)
     if gui.is_pressed(ti.GUI.ESCAPE):
         gui.running = False
