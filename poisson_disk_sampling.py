@@ -1,6 +1,6 @@
 """
 Poisson disk sampling in Taichi.
-Based on code by Yuanming Hu: https://github.com/taichi-dev/poisson_disk_sampling
+Based on code by YuanMing-Hu: https://github.com/taichi-dev/poisson_disk_sampling
 """
 import taichi as ti
 import taichi.math as tm
@@ -10,7 +10,7 @@ ti.init(arch=ti.cpu)
 grid_n = 20
 dx = 1 / grid_n
 radius = dx * tm.sqrt(2)
-desired_samples = 1000
+desired_samples = 200
 grid = ti.field(dtype=int, shape=(grid_n, grid_n))
 samples = ti.Vector.field(2, dtype=float, shape=desired_samples)
 window_size = 800
@@ -133,6 +133,7 @@ def render():
 
 refresh_scene()
 gui = ti.GUI("Poisson Disk Sampling", res=(window_size, window_size))
+gui.fps_limit = 10
 while gui.running and sample_count[None] < desired_samples:
     gui.get_event(ti.GUI.PRESS)
     if gui.is_pressed(ti.GUI.ESCAPE):
