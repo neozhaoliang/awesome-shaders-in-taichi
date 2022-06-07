@@ -132,24 +132,25 @@ def render():
 
 
 refresh_scene()
-gui = ti.GUI("Poisson Disk Sampling", res=(window_size, window_size))
+gui = ti.ui.Window("Poisson Disk Sampling", res=(window_size, window_size))
+canvas = gui.get_canvas()
 gui.fps_limit = 10
 while gui.running:
-    gui.get_event(ti.GUI.PRESS)
-    if gui.is_pressed(ti.GUI.ESCAPE):
+    gui.get_event(ti.ui.PRESS)
+    if gui.is_pressed(ti.ui.ESCAPE):
         gui.running = False
 
-    if gui.is_pressed(ti.GUI.LMB):
+    if gui.is_pressed(ti.ui.LMB):
         iMouse[None] = gui.get_cursor_pos()
         refresh_scene()
 
     if gui.is_pressed("p"):
-        gui.set_image(img)
+        canvas.set_image(img)
         gui.show("screenshot.png")
 
     poisson_disk_sample(sample_count[None])
     sample_count[None] += 1
     compute_distance_field()
     render()
-    gui.set_image(img)
+    canvas.set_image(img)
     gui.show()
