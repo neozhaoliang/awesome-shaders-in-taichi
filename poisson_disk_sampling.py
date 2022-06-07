@@ -146,7 +146,7 @@ while gui.running:
 
     if gui.is_pressed("p"):
         canvas.set_image(img)
-        gui.show("screenshot.png")
+        gui.write_image("screenshot.png")
 
     poisson_disk_sample(sample_count[None])
     sample_count[None] += 1
