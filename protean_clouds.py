@@ -5,7 +5,6 @@ import taichi.math as tm
 
 ti.init(arch=ti.vulkan)
 
-
 W, H = 960, 640
 MAXITER = 130
 iResolution = tm.vec2(W, H)
