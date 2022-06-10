@@ -2,6 +2,7 @@ import taichi as ti
 import taichi.math as tm
 from PIL import Image
 import numpy as np
+
 ti.init(arch=ti.vulkan)
 
 kMatGround = 0
