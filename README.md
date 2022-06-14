@@ -1,17 +1,10 @@
-Run the scripts using the Taichi nightly version:
+Install taichi:
 
 ```
-pip install -i https://pypi.taichi.graphics/simple/ taichi-nightly
+pip3 install -r requirements.txt
 ```
 
-
-This repo is going to contain:
-
-1. awesome shadertoy demos exported to Taichi
-2. awesome physically based animations written in Taichi
-3. awesome Fragmentarium artworks exported to Taichi.
-
-
+# Shadertoy Demos
 
 |     |     |     |
 |:---:|:---:|:---:|
@@ -21,3 +14,12 @@ This repo is going to contain:
 |<a href="./fractal_stamens.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/169115461-899a7bdd-94ed-415f-9f72-2a0d050d21cf.png"></img></a>|<a href="./flame.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/169733155-0d580be7-5867-4c7f-9aba-91ff804aaae9.png"></img></a>|<a href="./creative_block.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/171000612-e20b9baa-201b-46cd-aaa3-e7a43eb86d90.png"></img></a>|
 
 
+# Algorithms And Animations
+
+|     |     |     |
+|:---:|:---:|:---:|
+|Poisson Disk Sampling|||
+|<a href="./poisson_sample.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/171776193-1b73c948-c7c9-4c30-a4bd-bac3db4de06f.png"></img></a>|||
+
+
+# Raytraced Scenes
