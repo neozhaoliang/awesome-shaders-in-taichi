@@ -18,8 +18,8 @@ pip3 install -r requirements.txt
 
 |     |     |     |
 |:---:|:---:|:---:|
-|Poisson Disk Sampling|||
-|<a href="./poisson_sample.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/171776193-1b73c948-c7c9-4c30-a4bd-bac3db4de06f.png"></img></a>|||
+|Poisson Disk Sampling|N-Body Simulation||
+|<a href="./poisson_sample.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/171776193-1b73c948-c7c9-4c30-a4bd-bac3db4de06f.png"></img></a>|<a href="./nbody.py"><img width="250" src="https://user-images.githubusercontent.com/23307174/180067704-4e9c0763-d840-4c53-90da-f348e9a58d95.png"></img></a>||
 
 
 ## Raytraced Scenes
