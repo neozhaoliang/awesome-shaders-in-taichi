@@ -22,7 +22,7 @@ galaxy_size = 0.5  # galaxy size
 mass = 1  # particle mass
 init_vel = 120  # initial velocity
 lum_density = 40000.0
-
+star_size = 2.0
 
 @ti.func
 def hash11(x):
@@ -53,9 +53,9 @@ def draw_particles(uv):
             tm.length(p * starhv.yx),
             tm.length(q * stardiag),
             tm.length(q * stardiag.yx)
-        ) * 2 + tm.vec4(0.015, tm.vec3(0.01))
+        ) * star_size + tm.vec4(0.015, tm.vec3(0.01))
         lum0 = tm.mix(0.1, 3.2, hash11(i + 20))
-        lum1 = tm.dot(tm.vec4(0.65, 0.65, 0.2, 0.2), 1 / dists) + 1 / (p.norm() * 2 + 0.015)
+        lum1 = tm.dot(tm.vec4(0.65, 0.65, 0.2, 0.2), 1 / dists) + 1 / (p.norm() * star_size + 0.015)
         lum = lum0 * pow(lum1, 2.2) / lum_density
         col += get_particle_color(i, lum)
     return col
